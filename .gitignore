@@ -135,3 +135,18 @@ Doxyfile.bak
 # Custom build artifacts (ajusta según tu proyecto)
 # my_executable
 # *.custom_extension
+# Devenv
+.devenv*
+devenv.local.nix
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml
+
+.envrc
+.helix/
+devenv.nix
+devenv.yaml
+devenv.lock
