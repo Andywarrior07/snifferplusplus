@@ -5,7 +5,7 @@ int main() {
   // Step 1: open a socket
   int socket_file_descriptor = open_socket();
 
-  printf("socket file descriptor: %d", socket_file_descriptor);
+  printf("socket file descriptor: %d\n", socket_file_descriptor);
 
   // Step 2: inspect NICs
 
