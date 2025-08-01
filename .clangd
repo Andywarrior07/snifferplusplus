@@ -1,0 +1,45 @@
+CompileFlags:
+  Add:
+    # Use C++20 standard
+    # <https://en.cppreference.com/w/cpp/20.html>
+    - -std=c++20
+
+    # Enable all common warnings
+    # <https://clang.llvm.org/docs/DiagnosticsReference.html#wall>
+    - -Wall
+
+    # Enable extra warnings
+    # <https://clang.llvm.org/docs/DiagnosticsReference.html#wextra>
+    - -Wextra
+
+    # Enforce standard compliance
+    # <https://clang.llvm.org/docs/DiagnosticsReference.html#wpedantic>
+    - -Wpedantic
+
+    # Warn on implicit type conversions
+    # <https://clang.llvm.org/docs/DiagnosticsReference.html#wconversion>
+    - -Wconversion
+
+    # Warn if a variable shadows another
+    # <https://clang.llvm.org/docs/DiagnosticsReference.html#wshadow>
+    - -Wshadow
+
+    # Treat warnings as errors
+    # <https://clang.llvm.org/docs/UsersManual.html#options-to-control-error-and-warning-messages>
+    - -Werror
+
+    # Enable sanitizer for memory and undefined behavior
+    # <https://clang.llvm.org/docs/AddressSanitizer.html>
+    # <https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html>
+    - -fsanitize=address,undefined
+
+    # - -D_POSIX_C_SOURCE=200809L     # Expose POSIX APIs -- investigate
+    # - -D_DARWIN_C_SOURCE            # Expose macOS-specific C APIs -- investigate
+    
+Diagnostics:
+  # [Full list of theck options](https://clang.llvm.org/extra/clang-tidy/checks/list.html)
+  ClangTidy:
+    Add:
+      - modernize*
+      - readability*
+    Remove: modernize-use-trailing-return-type
