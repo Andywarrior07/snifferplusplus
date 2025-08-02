@@ -6,7 +6,6 @@
 int open_socket() { return socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL)); }
 #elif defined(__APPLE__)
 #include <fcntl.h>
-#include <net/bpf.h>
 #include <sys/socket.h>
 int open_socket() { return open("/dev/bpf0", O_RDWR); }
 #else
