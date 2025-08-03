@@ -17,7 +17,8 @@
     - [x] **Linux**: use the `socket()` system call to request a raw socket from the kernel.
     - [x] **macOS:** open a `BPF` device node like `/dev/bpf0` to access raw packets
     - [x] Handle errors for each platform.
-2. [ ] Inspect available network interfaces.
-3. [ ] Select and bind/connect to an interface.
+2. [x] Inspect available network interfaces.
+3. [x] Select and bind/connect to an interface.
 4. [ ] Read raw packets.
+    - [ ] **To-do**: read ether-type/packet length.
 5. [ ] Parse and decode the headers and payload.
