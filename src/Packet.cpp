@@ -1,22 +1,24 @@
 //
-// Created by Andres Guerrero on 02-08-25.
+// Created by Andres Guerrero on 02-08-99.
 //
 
 #include "Packet.hpp"
 
 #include <arpa/inet.h>
 #include <netinet/ip.h>
-#include <net/bpf.h>
-#include <net/ethernet.h>
 
+#ifdef __APPLE__
+#include <net/bpf.h>
+#endif
+
+#include <net/ethernet.h>
 #include <netinet/in.h>
-#include <netinet/ip.h>
 #include <netinet/tcp.h>
 #include <netinet/udp.h>
 
 #include <iostream>
 
-Packet::Packet(): info() {}
+Packet::Packet() : info() {}
 
 #ifdef __APPLE__
 void Packet::process_bpf_buffer(const uint8_t* buffer, const size_t size) {
@@ -158,6 +160,5 @@ void Packet::copy_payload_preview(const uint8_t* data, const size_t size, std::v
 }
 
 std::string Packet::mac_to_string(const uint8_t* mac) {
-    return std::format("{:02x}:{:02x}:{:02x}:{:02x}:{:02x}:{:02x}",
-                          mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+    return std::format("{:02x}:{:02x}:{:02x}:{:02x}:{:02x}:{:02x}", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 }

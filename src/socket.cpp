@@ -36,12 +36,13 @@ class Socket {
             return false;
         };
 
+#ifdef __APPLE__
         if (!setup_bpf()) {
             std::cerr << "Error while setting up bpf: " << std::strerror(errno) << std::endl;
             raw_socket = -1;
             return false;
         }
-
+#endif
         return true;
     }
 
@@ -65,7 +66,8 @@ class Socket {
 #ifdef __APPLE__
                 packet.process_bpf_buffer(reinterpret_cast<const uint8_t*>(buffer.get()), data_size);
 #else
-                packet.process_packet(buffer.get(), data_size);
+                packet.process_packet((uint8_t*) (buffer.get()), (size_t) data_size);
+
 #endif
             }
         }

@@ -3,7 +3,10 @@
 //
 
 #pragma once
+#include <chrono>
 #include <cstdint>
+#include <optional>
+#include <string>
 #include <vector>
 
 struct PacketInfo {
@@ -30,7 +33,7 @@ struct PacketInfo {
 };
 
 class Packet {
-public:
+   public:
     Packet();
     ~Packet() = default;
 
@@ -38,7 +41,8 @@ public:
     void process_bpf_buffer(const uint8_t* buffer, size_t size);
 #endif
     void process_packet(const uint8_t* buffer, size_t size);
-private:
+
+   private:
     PacketInfo info;
     size_t max_payload_preview = 64;
 
