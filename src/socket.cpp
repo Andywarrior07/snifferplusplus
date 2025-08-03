@@ -6,6 +6,8 @@
 #include <string>
 #include <unordered_set>
 #include <vector>
+
+#include "Packet.hpp"
 #ifdef __linux__
 #include <linux/if_ether.h>
 #include <netinet/in.h>
@@ -43,7 +45,7 @@ class Socket {
         return true;
     }
 
-    void read_packet() const {
+    void read_packet() {
         auto buffer = std::make_unique<char[]>(buffer_size);
 
         std::cout << "Reading packets..." << std::endl;
@@ -51,7 +53,7 @@ class Socket {
 #ifdef __APPLE__
             const ssize_t data_size = read(raw_socket, buffer.get(), buffer_size);
 
-            std::cout << "Read " << data_size << " bytes" << std::endl;
+            // std::cout << "Read " << data_size << " bytes" << std::endl;
             if (data_size < 0) {
                 std::cerr << "Error while reading: " << std::strerror(errno) << std::endl;
                 return;
@@ -59,6 +61,13 @@ class Socket {
 #else
             ssize_t data_size = recv(raw_socket, buffer.get(), buffer_size, 0);
 #endif
+            if (data_size > 0) {
+#ifdef __APPLE__
+                packet.process_bpf_buffer(reinterpret_cast<const uint8_t*>(buffer.get()), data_size);
+#else
+                packet.process_packet(buffer.get(), data_size);
+#endif
+            }
         }
     }
 
@@ -69,6 +78,7 @@ class Socket {
    private:
     int raw_socket = -1;
     u_int buffer_size = 4096;
+    Packet packet;
 
 #ifdef __APPLE__
     static int open_bpf_socket() {
