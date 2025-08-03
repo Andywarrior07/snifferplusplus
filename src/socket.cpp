@@ -26,7 +26,7 @@ const u_int BUFFER_SIZE = 4096;
 
 class Socket {
    public:
-    bool initialize() {
+    bool initialize(std::string& nic_name) {
 #ifdef __linux__
         raw_socket = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
 #elif __APPLE__
@@ -129,26 +129,3 @@ class Socket {
     }
 #endif
 };
-
-std::vector<std::string> get_network_interfaces() {
-    ifaddrs* ifaddr;
-
-    if (getifaddrs(&ifaddr) == -1) {
-        std::cerr << "Error while getting NICs: " << std::strerror(errno) << std::endl;
-        exit(1);
-    }
-
-    std::unordered_set<std::string> names;
-
-    for (const ifaddrs* ifa = ifaddr; ifa != nullptr; ifa = ifa->ifa_next) {
-        if (ifa->ifa_addr == nullptr) {
-            continue;
-        }
-
-        names.insert(ifa->ifa_name);
-    }
-    freeifaddrs(ifaddr);
-
-    std::vector<std::string> unique_names(names.begin(), names.end());
-    return unique_names;
-}

@@ -1,29 +1,21 @@
-#include <ifaddrs.h>
-
-#include <cstdlib>
-#include <iostream>
-#include <ostream>
-#include <string>
-#include <unordered_set>
-#include <vector>
-
 #include "socket.cpp"
 
 std::string get_user_input(const std::vector<std::string>& nic_names);
+std::vector<std::string> get_network_interfaces();
 
 int main() {
-    // Step 1: open a socket
-    Socket socket;
-
-    if (!socket.initialize()) {
-        return -1;
-    }
-
-    // Step 2: inspect NICs
+    // Step 1: inspect network interfaces.
     std::vector<std::string> nic_names = get_network_interfaces();
 
-    // Step 3: prompt user
+    // Step 2: prompt the user to pick an interface.
     std::string selected_nic = get_user_input(nic_names);
+
+    // Step 3: open a socket
+    Socket socket;
+
+    if (!socket.initialize(selected_nic)) {
+        return -1;
+    }
 
     socket.read_packet();
 
@@ -31,6 +23,29 @@ int main() {
 
     // Step 4: recieve packages
     return 0;
+}
+
+std::vector<std::string> get_network_interfaces() {
+    ifaddrs* ifaddr;
+
+    if (getifaddrs(&ifaddr) == -1) {
+        std::cerr << "Error while getting NICs: " << std::strerror(errno) << std::endl;
+        exit(1);
+    }
+
+    std::unordered_set<std::string> names;
+
+    for (const ifaddrs* ifa = ifaddr; ifa != nullptr; ifa = ifa->ifa_next) {
+        if (ifa->ifa_addr == nullptr) {
+            continue;
+        }
+
+        names.insert(ifa->ifa_name);
+    }
+    freeifaddrs(ifaddr);
+
+    std::vector<std::string> unique_names(names.begin(), names.end());
+    return unique_names;
 }
 
 std::string get_user_input(const std::vector<std::string>& nic_names) {
