@@ -3,6 +3,7 @@
 
 #include <cstring>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <unordered_set>
 #include <vector>
@@ -21,12 +22,12 @@
 #error "unsupported platform: only availabe on linux and macos"
 #endif
 
+const u_int BUFFER_SIZE = 4096;
+
 class Socket {
    public:
     bool initialize() {
 #ifdef __linux__
-        // [socket manual](https://linux.die.net/man/7/socket)
-        // [packet manual](https://linux.die.net/man/7/packet)
         raw_socket = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
 #elif __APPLE__
         raw_socket = open_bpf_socket();
@@ -35,7 +36,6 @@ class Socket {
             std::cerr << "Error while creating file descriptor: " << std::strerror(errno) << std::endl;
             return false;
         };
-
 #ifdef __APPLE__
         if (!setup_bpf()) {
             std::cerr << "Error while setting up bpf: " << std::strerror(errno) << std::endl;
@@ -47,20 +47,24 @@ class Socket {
     }
 
     void read_packet() {
-        auto buffer = std::make_unique<char[]>(buffer_size);
+        auto buffer = std::make_unique<char[]>(BUFFER_SIZE);
 
         std::cout << "Reading packets..." << std::endl;
         while (true) {
 #ifdef __APPLE__
-            const ssize_t data_size = read(raw_socket, buffer.get(), buffer_size);
+            const ssize_t data_size = read(raw_socket, buffer.get(), BUFFER_SIZE);
 
-            // std::cout << "Read " << data_size << " bytes" << std::endl;
             if (data_size < 0) {
                 std::cerr << "Error while reading: " << std::strerror(errno) << std::endl;
                 return;
             }
 #else
-            ssize_t data_size = recv(raw_socket, buffer.get(), buffer_size, 0);
+            ssize_t data_size = recv(raw_socket, buffer.get(), BUFFER_SIZE, 0);
+            if (data_size < 0) {
+                std::cerr << "Error while reading: " << std::strerror(errno) << std::endl;
+                return;
+            }
+            std::cout << "Read " << data_size << " bytes" << std::endl;
 #endif
             if (data_size > 0) {
 #ifdef __APPLE__
@@ -73,13 +77,8 @@ class Socket {
         }
     }
 
-    // Platform dependent. Creates an unbound file descriptor that we will
-    // connect to a Network Interface.
-    [[nodiscard]] int get_socket() const { return raw_socket; }
-
    private:
     int raw_socket = -1;
-    u_int buffer_size = 4096;
     Packet packet;
 
 #ifdef __APPLE__
@@ -102,7 +101,7 @@ class Socket {
     }
 
     bool setup_bpf() {
-        if (ioctl(raw_socket, BIOCGBLEN, &buffer_size) < 0) {
+        if (ioctl(raw_socket, BIOCGBLEN, &BUFFER_SIZE) < 0) {
             std::cerr << "Error while setting up bpf: " << std::strerror(errno) << std::endl;
             return false;
         }
@@ -131,7 +130,7 @@ class Socket {
 #endif
 };
 
-ifaddrs* get_network_interfaces() {
+std::vector<std::string> get_network_interfaces() {
     ifaddrs* ifaddr;
 
     if (getifaddrs(&ifaddr) == -1) {
@@ -139,22 +138,17 @@ ifaddrs* get_network_interfaces() {
         exit(1);
     }
 
-    std::vector<std::string> nics;
-    std::unordered_set<std::string> viewed;
+    std::unordered_set<std::string> names;
 
     for (const ifaddrs* ifa = ifaddr; ifa != nullptr; ifa = ifa->ifa_next) {
         if (ifa->ifa_addr == nullptr) {
             continue;
         }
 
-        if (viewed.insert(ifa->ifa_name).second) {
-            nics.push_back(ifa->ifa_name);
-        }
+        names.insert(ifa->ifa_name);
     }
+    freeifaddrs(ifaddr);
 
-    for (const auto& name : nics) {
-        std::cout << "Name: " << name << std::endl;
-    }
-
-    return ifaddr;
+    std::vector<std::string> unique_names(names.begin(), names.end());
+    return unique_names;
 }
