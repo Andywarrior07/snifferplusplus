@@ -22,7 +22,7 @@
 #error "unsupported platform: only availabe on linux and macos"
 #endif
 
-const u_int BUFFER_SIZE = 4096;
+u_int BUFFER_SIZE = 4096;
 
 class Socket {
    public:
@@ -100,17 +100,15 @@ class Socket {
         return -1;
     }
 
-    bool setup_bpf(str::string& nic_name) {
+    bool setup_bpf(const std::string& nic_name) const {
         if (ioctl(raw_socket, BIOCGBLEN, &BUFFER_SIZE) < 0) {
             std::cerr << "Error while setting up bpf: " << std::strerror(errno) << std::endl;
             return false;
         }
-
-        const std::string interface = nic_name;
-
+std::cout << "nic_name: " << nic_name << std::endl;
         ifreq ifr = {};
 
-        strncpy(ifr.ifr_name, interface.c_str(), sizeof(ifr.ifr_name));
+        strncpy(ifr.ifr_name, nic_name.c_str(), sizeof(ifr.ifr_name));
 
         if (ioctl(raw_socket, BIOCSETIF, &ifr) < 0) {
             std::cerr << "Error while setting up bpf: " << std::strerror(errno) << std::endl;

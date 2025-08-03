@@ -66,5 +66,5 @@ std::string get_user_input(const std::vector<std::string>& nic_names) {
         exit(1);
     }
 
-    return nic_names[nic_idx];
+    return nic_names[nic_idx - 1];
 }
