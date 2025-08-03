@@ -17,11 +17,13 @@ int main() {
     // Step 2: inspect NICs
     ifaddrs* ifaddr = get_network_interfaces();
 
-    // Step 3: bind to NIC
-    std::string nic_selected;
+    socket.read_packet();
 
-    std::cout << "Select a network interface\n";
-    std::cin >> nic_selected;
+    // Step 3: bind to NIC
+    // std::string nic_selected;
+    //
+    // std::cout << "Select a network interface\n";
+    // std::cin >> nic_selected;
 
     // Step 4: recieve packages
     freeifaddrs(ifaddr);

@@ -1,6 +1,8 @@
 #include <arpa/inet.h>
 #include <cstring>
 #include <ifaddrs.h>
+#include <net/bpf.h>
+
 #include <iostream>
 #include <string>
 #include <unordered_set>
@@ -11,6 +13,8 @@
 #elif __APPLE__
 #include <fcntl.h>
 #include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
 #else
 #error "unsupported platform: only availabe on linux and macos"
 #endif
@@ -30,7 +34,32 @@ public:
             return false;
         };
 
+        if (!setup_bpf()) {
+            std::cerr << "Error while setting up bpf: " << std::strerror(errno) << std::endl;
+            raw_socket = -1;
+            return false;
+        }
+
         return true;
+    }
+
+    void read_packet() const {
+        auto buffer = std::make_unique<char[]>(buffer_size);
+
+        std::cout << "Reading packets..." << std::endl;
+        while (true) {
+#ifdef __APPLE__
+            const ssize_t data_size = read(raw_socket, buffer.get(), buffer_size);
+
+            std::cout << "Read " << data_size << " bytes" << std::endl;
+            if (data_size < 0) {
+                std::cerr << "Error while reading: " << std::strerror(errno) << std::endl;
+                return;
+            }
+#else
+            ssize_t data_size = recv(raw_socket, buffer.get(), buffer_size, 0);
+#endif
+        }
     }
 
     // Platform dependent. Creates an unbound file descriptor that we will
@@ -39,6 +68,7 @@ public:
 
 private:
     int raw_socket = -1;
+    u_int buffer_size = 4096;
 
 #ifdef __APPLE__
     static int open_bpf_socket() {
@@ -51,11 +81,40 @@ private:
 
             if (socket != -1) {
                 std::cout << "Using bpf: " << bpf_device << std::endl;
+
                 return socket;
             }
         }
 
         return -1;
+    }
+
+    bool setup_bpf() {
+        if (ioctl(raw_socket, BIOCGBLEN, &buffer_size) < 0) {
+            std::cerr << "Error while setting up bpf: " << std::strerror(errno) << std::endl;
+            return false;
+        }
+
+        const std::string interface = "en0";
+
+        ifreq ifr = {};
+
+        strncpy(ifr.ifr_name, interface.c_str(), sizeof(ifr.ifr_name));
+
+        if (ioctl(raw_socket, BIOCSETIF, &ifr) < 0) {
+            std::cerr << "Error while setting up bpf: " << std::strerror(errno) << std::endl;
+            return false;
+        }
+
+        timeval timeout;
+        timeout.tv_sec = 1;
+        timeout.tv_usec = 0;
+
+        if (ioctl(raw_socket, BIOCSRTIMEOUT, &timeout) < 0) {
+            std::cerr << "Warning: could not configure timeout" << std::endl;
+        }
+
+        return true;
     }
 #endif
 };
