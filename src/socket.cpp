@@ -1,8 +1,7 @@
 #include <arpa/inet.h>
-#include <cstring>
 #include <ifaddrs.h>
-#include <net/bpf.h>
 
+#include <cstring>
 #include <iostream>
 #include <string>
 #include <unordered_set>
@@ -12,15 +11,16 @@
 #include <netinet/in.h>
 #elif __APPLE__
 #include <fcntl.h>
-#include <sys/socket.h>
+#include <net/bpf.h>
 #include <sys/ioctl.h>
+#include <sys/socket.h>
 #include <unistd.h>
 #else
 #error "unsupported platform: only availabe on linux and macos"
 #endif
 
 class Socket {
-public:
+   public:
     bool initialize() {
 #ifdef __linux__
         // [socket manual](https://linux.die.net/man/7/socket)
@@ -66,7 +66,7 @@ public:
     // connect to a Network Interface.
     [[nodiscard]] int get_socket() const { return raw_socket; }
 
-private:
+   private:
     int raw_socket = -1;
     u_int buffer_size = 4096;
 
