@@ -1,12 +1,8 @@
 #include <arpa/inet.h>
-#include <ifaddrs.h>
-
-#include <array>
-#include <cstdlib>
 #include <cstring>
+#include <ifaddrs.h>
 #include <iostream>
 #include <string>
-#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 #ifdef __linux__
@@ -20,7 +16,7 @@
 #endif
 
 class Socket {
-   public:
+public:
     bool initialize() {
 #ifdef __linux__
         // [socket manual](https://linux.die.net/man/7/socket)
@@ -41,7 +37,7 @@ class Socket {
     // connect to a Network Interface.
     [[nodiscard]] int get_socket() const { return raw_socket; }
 
-   private:
+private:
     int raw_socket = -1;
 
 #ifdef __APPLE__

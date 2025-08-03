@@ -1,11 +1,5 @@
-#include <arpa/inet.h>
 #include <ifaddrs.h>
-#include <net/if.h>
-#include <netinet/in.h>
-
-#include <cstring>
 #include <iostream>
-#include <memory>
 #include <ostream>
 
 #include "socket.cpp"
