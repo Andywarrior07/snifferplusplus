@@ -48,6 +48,8 @@ std::vector<std::string> get_network_interfaces() {
     return unique_names;
 }
 
+// Prompts the user to select a NIC.
+// Returns a valid name or exits with status 1.
 std::string get_user_input(const std::vector<std::string>& nic_names) {
     std::cout << "Select a network interface:\n\n";
     int index = 1;

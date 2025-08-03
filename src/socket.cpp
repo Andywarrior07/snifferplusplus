@@ -37,7 +37,7 @@ class Socket {
             return false;
         };
 #ifdef __APPLE__
-        if (!setup_bpf()) {
+        if (!setup_bpf(nic_name)) {
             std::cerr << "Error while setting up bpf: " << std::strerror(errno) << std::endl;
             raw_socket = -1;
             return false;
@@ -100,13 +100,13 @@ class Socket {
         return -1;
     }
 
-    bool setup_bpf() {
+    bool setup_bpf(str::string& nic_name) {
         if (ioctl(raw_socket, BIOCGBLEN, &BUFFER_SIZE) < 0) {
             std::cerr << "Error while setting up bpf: " << std::strerror(errno) << std::endl;
             return false;
         }
 
-        const std::string interface = "en0";
+        const std::string interface = nic_name;
 
         ifreq ifr = {};
 
