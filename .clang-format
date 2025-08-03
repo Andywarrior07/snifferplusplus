@@ -1,0 +1,59 @@
+# IndentWidth: 4
+# Tu configuración personalizada de ClangFormat
+BasedOnStyle: Google
+
+# === INDENTACIÓN Y ESPACIOS ===
+IndentWidth: 4                    # 4 espacios por nivel
+TabWidth: 4
+UseTab: Never                     # Solo espacios, nunca tabs
+ColumnLimit: 120                  # Líneas más largas para código moderno
+
+# === LLAVES Y FORMATO ===
+BreakBeforeBraces: Attach         # { en la misma línea
+SpaceBeforeParens: ControlStatements  # if (condition) pero function()
+SpacesInParentheses: false        # (param) no ( param )
+SpacesInSquareBrackets: false     # [index] no [ index ]
+SpaceAfterCStyleCast: true        # (int) x no (int)x
+
+# === ALINEACIÓN ===
+AlignOperands: Align              # Alinear operandos en múltiples líneas
+AlignConsecutiveAssignments: None # No alinear asignaciones consecutivas
+AlignConsecutiveDeclarations: None
+AlignTrailingComments: true       # Alinear comentarios al final
+
+# === SALTOS DE LÍNEA ===
+AllowShortIfStatementsOnASingleLine: WithoutElse  # if (x) return; está OK
+AllowShortLoopsOnASingleLine: true                # for (int i...) continue; OK
+AllowShortFunctionsOnASingleLine: Inline          # Solo funciones inline cortas
+AllowShortBlocksOnASingleLine: Empty              # Solo bloques vacíos
+
+# === INCLUDES ===
+SortIncludes: CaseSensitive       # Ordenar includes
+IncludeBlocks: Regroup           # Agrupar y separar tipos de includes
+
+# === PUNTEROS Y REFERENCIAS ===
+PointerAlignment: Left            # int* ptr no int *ptr
+ReferenceAlignment: Left          # int& ref no int &ref
+DerivePointerAlignment: false
+
+# === COMENTARIOS ===
+ReflowComments: true              # Reformatear comentarios largos
+SpacesBeforeTrailingComments: 2   # Espacio antes de comentarios finales
+
+# === CARACTERÍSTICAS C++ ===
+Standard: c++20                   # Usar características modernas
+Cpp11BracedListStyle: true        # {1, 2, 3} no { 1, 2, 3 }
+FixNamespaceComments: true        # Agregar // namespace name
+CompactNamespaces: false          # Espacios entre namespaces anidados
+
+# === STRINGS Y LITERALES ===
+AlwaysBreakBeforeMultilineStrings: false
+BreakStringLiterals: true         # Partir strings largos
+
+# === TEMPLATES ===
+AlwaysBreakTemplateDeclarations: Yes  # Siempre partir declaraciones template
+
+# === FUNCIONES ===
+AllowAllParametersOfDeclarationOnNextLine: false  # Forzar parámetros en líneas separadas si no caben
+BinPackParameters: false                          # Un parámetro por línea si no caben todos
+BinPackArguments: false
