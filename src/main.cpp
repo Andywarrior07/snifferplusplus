@@ -1,4 +1,8 @@
-#include "socket.cpp"
+#include <iostream>
+#include <unordered_set>
+#include <ifaddrs.h>
+#include "Packet.hpp"
+#include "socket/RawSocket.h"
 
 std::string get_user_input(const std::vector<std::string>& nic_names);
 std::vector<std::string> get_network_interfaces();
@@ -11,13 +15,31 @@ int main() {
     std::string selected_nic = get_user_input(nic_names);
 
     // Step 3: open a socket
-    Socket socket;
+
+    const RawSocket socket;
 
     if (!socket.initialize(selected_nic)) {
         return -1;
     }
 
-    socket.read_packet();
+    const auto packet = std::make_unique<Packet>();
+    const auto buffer = std::make_unique<uint8_t[]>(4096);
+
+    while (true) {
+        const ssize_t data_size = socket.read_packet(buffer.get());
+
+        if (data_size < 0) {
+            std::cerr << "Error reading packet: " << std::strerror(errno) << std::endl;
+            break;
+        }
+
+        if (data_size == 0) {
+            continue; // No hay datos, continuar
+        }
+
+
+        packet->process_bpf_buffer(buffer.get(), static_cast<size_t>(data_size));
+    }
 
     // Step 3: bind to NIC
 
@@ -33,7 +55,7 @@ std::vector<std::string> get_network_interfaces() {
         exit(1);
     }
 
-    std::unordered_set<std::string> names;
+    unordered_set<std::string> names;
 
     for (const ifaddrs* ifa = ifaddr; ifa != nullptr; ifa = ifa->ifa_next) {
         if (ifa->ifa_addr == nullptr) {
