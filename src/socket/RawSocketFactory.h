@@ -3,13 +3,16 @@
 //
 
 #pragma once
+#include <memory>
+
 #include "IRawSocket.h"
+#include "linux/LinuxRawSocket.h"
 #include "macos/MacRawSocket.h"
 
 using namespace std;
 
 class RawSocketFactory {
-public:
+   public:
     static unique_ptr<IRawSocket> create() {
 #ifdef __linux__
         return make_unique<LinuxRawSocket>();
