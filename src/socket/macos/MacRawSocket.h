@@ -1,11 +1,12 @@
 //
 // Created by Andres Guerrero on 08-08-25.
 //
-
+// Created by Andres Guerrero on 08-08-25.
+//
 #pragma once
 #include "../IRawSocket.h"
 
-class MacRawSocket : public IRawSocket {
+class MacRawSocket final : public IRawSocket {
    public:
     MacRawSocket();
     ~MacRawSocket() override;

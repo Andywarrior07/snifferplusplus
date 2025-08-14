@@ -12,10 +12,10 @@ std::vector<std::string> get_network_interfaces();
 
 int main() {
     // Step 1: inspect network interfaces.
-    vector<string> nic_names = get_network_interfaces();
+    const vector<string> nic_names = get_network_interfaces();
 
     // Step 2: prompt the user to pick an interface.
-    string selected_nic = get_user_input(nic_names);
+    const string selected_nic = get_user_input(nic_names);
 
     // Step 3: open a socket
 

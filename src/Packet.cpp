@@ -2,7 +2,7 @@
 // Created by Andres Guerrero on 02-08-99.
 //
 
-#include "Packet.hpp"
+#include "Packet.h"
 
 #include <arpa/inet.h>
 #include <netinet/ip.h>

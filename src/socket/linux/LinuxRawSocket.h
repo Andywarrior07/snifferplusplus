@@ -1,7 +1,11 @@
+//
+// Created by Borislav Castillo on 12-08-25.
+//
+
 #pragma once
 #include "../IRawSocket.h"
 
-class LinuxRawSocket : public IRawSocket {
+class LinuxRawSocket final : public IRawSocket {
    public:
     LinuxRawSocket();
     ~LinuxRawSocket() override;

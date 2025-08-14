@@ -18,7 +18,7 @@ using namespace std;
 MacRawSocket::MacRawSocket() : raw_socket(-1), buffer_size(BUFFER_SIZE) {}
 
 MacRawSocket::~MacRawSocket() {
-    close();
+    close_socket();
 }
 
 bool MacRawSocket::initialize(const string& nic_name) {
@@ -97,7 +97,7 @@ ssize_t MacRawSocket::read_packet(uint8_t* buffer) {
     return data_size;
 }
 
-void MacRawSocket::close() {
+void MacRawSocket::close_socket() {
     if (raw_socket != -1) {
         cout << "Closing socket..." << endl;
 
