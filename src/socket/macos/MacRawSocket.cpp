@@ -87,7 +87,7 @@ ssize_t MacRawSocket::read_packet(uint8_t* buffer) {
         return -1;
     }
 
-    ssize_t data_size = read(raw_socket, buffer, buffer_size);
+    const ssize_t data_size = read(raw_socket, buffer, buffer_size);
 
     if (data_size < 0) {
         std::cerr << "Error while reading: " << std::strerror(errno) << std::endl;
